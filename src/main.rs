@@ -228,13 +228,20 @@ fn main() {
         let (dna, probs) = match fs::read_to_string(file).map(|s| {
             let mut split = s.trim().split('\n');
             let dna = split.next().unwrap().to_owned();
-            let probs = split.next().unwrap().split(' ').map(|f| f.parse::<f64>().unwrap()).collect::<Vec<_>>();
+            let probs = split
+                .next()
+                .unwrap()
+                .split(' ')
+                .map(|f| f.parse::<f64>().unwrap())
+                .collect::<Vec<_>>();
             (dna, probs)
         }) {
             Ok(s) => s,
             Err(e) => panic!("{:?}", e),
         };
-        probs.into_iter().for_each(|p| print!("{} ", dna_prob(&dna, p)));
+        probs
+            .into_iter()
+            .for_each(|p| print!("{} ", dna_prob(&dna, p)));
         println!()
     }
 }
