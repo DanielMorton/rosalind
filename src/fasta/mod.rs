@@ -1,5 +1,6 @@
-mod graph;
+mod pairs;
 mod read;
 
-pub(super) use graph::pairs;
+pub(super) use pairs::pairs;
 pub(super) use read::read_fasta;
+pub(super) use read::FASTA;

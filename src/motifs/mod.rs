@@ -1,9 +1,13 @@
 mod file;
 mod find;
 mod hamming;
+mod lcs;
 mod motif;
+
+static DNA: &[&str] = &["A", "C", "G", "T"];
 
 pub(super) use file::read_two_line;
 pub(super) use find::find_motifs;
 pub(super) use hamming::hamming_distance;
+pub(super) use lcs::lcs;
 pub(super) use motif::motif_start;

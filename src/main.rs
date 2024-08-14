@@ -2,6 +2,7 @@ mod dna;
 mod fasta;
 mod fibonacci;
 mod gc;
+mod graph;
 mod mendel;
 mod motifs;
 mod parse;
@@ -9,9 +10,11 @@ mod profile;
 mod protein;
 
 use crate::fasta::{pairs, read_fasta};
-use crate::motifs::find_motifs;
+use crate::graph::{inner_nodes, tree_edge_fill};
+use crate::mendel::{dna_prob, factorial, npr, permute};
+use crate::motifs::{find_motifs, lcs};
 use crate::profile::find_consensus;
-use crate::protein::find_orfs;
+use crate::protein::{find_orfs, rna_splice};
 use dna::{dna_to_rna, nucleotide_count, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;
@@ -31,7 +34,7 @@ fn main() {
     let file_type = matches.get_file_type();
     let file = matches.get_file();
 
-    if file_type == "dna" {
+    if file_type == "dna" || file_type == "ini" {
         let dna = match fs::read_to_string(file) {
             Ok(s) => s,
             Err(e) => panic!("{:?}", e),
@@ -161,9 +164,77 @@ fn main() {
             Ok(s) => s,
             Err(e) => panic!("{:?}", e),
         };
-        find_orfs(&dna).iter()
+        find_orfs(&dna)
+            .iter()
             .collect::<HashSet<_>>()
             .iter()
             .for_each(|orf| println!("{orf}"))
+    } else if file_type == "splc" {
+        let fasta = read_fasta(&file);
+        let dna = fasta[0].dna.clone();
+        let introns = fasta[1..].iter().map(|f| f.dna.clone()).collect::<Vec<_>>();
+        println!("{}", rna_splice(&dna, &introns))
+    } else if file_type == "lcsm" {
+        let fasta = read_fasta(&file);
+        println!("{}", lcs(&fasta))
+    } else if file_type == "perm" {
+        let n = match fs::read_to_string(file).map(|f| f.trim().parse::<usize>().unwrap()) {
+            Ok(s) => s,
+            Err(e) => panic!("{:?}", e),
+        };
+        println!("{}", factorial(n));
+        permute(n).into_iter().for_each(|v| {
+            v.into_iter().for_each(|p| print!("{} ", p));
+            println!()
+        })
+    } else if file_type == "tree" {
+        let (n, edges) = match fs::read_to_string(file).map(|s| {
+            let mut split = s.trim().split('\n');
+            let n = split.next().unwrap().parse::<usize>().unwrap();
+            let edges = split
+                .map(|e| {
+                    let mut e_split = e.split(' ');
+                    (
+                        e_split.next().unwrap().parse::<usize>().unwrap(),
+                        e_split.next().unwrap().parse::<usize>().unwrap(),
+                    )
+                })
+                .collect::<Vec<_>>();
+            (n, edges)
+        }) {
+            Ok(s) => s,
+            Err(e) => panic!("{:?}", e),
+        };
+        println!("{}", tree_edge_fill(n, &edges))
+    } else if file_type == "inod" {
+        let n = match fs::read_to_string(file).map(|f| f.trim().parse::<usize>().unwrap()) {
+            Ok(s) => s,
+            Err(e) => panic!("{:?}", e),
+        };
+        println!("{}", inner_nodes(n))
+    } else if file_type == "pper" {
+        let (n, r) = match fs::read_to_string(file).map(|s| {
+            let mut split = s.trim().split(' ');
+            (
+                split.next().unwrap().parse::<u64>().unwrap(),
+                split.next().unwrap().parse::<u64>().unwrap(),
+            )
+        }) {
+            Ok(s) => s,
+            Err(e) => panic!("{:?}", e),
+        };
+        println!("{}", npr(n, r))
+    } else if file_type == "prob" {
+        let (dna, probs) = match fs::read_to_string(file).map(|s| {
+            let mut split = s.trim().split('\n');
+            let dna = split.next().unwrap().to_owned();
+            let probs = split.next().unwrap().split(' ').map(|f| f.parse::<f64>().unwrap()).collect::<Vec<_>>();
+            (dna, probs)
+        }) {
+            Ok(s) => s,
+            Err(e) => panic!("{:?}", e),
+        };
+        probs.into_iter().for_each(|p| print!("{} ", dna_prob(&dna, p)));
+        println!()
     }
 }
