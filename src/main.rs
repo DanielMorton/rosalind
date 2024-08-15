@@ -12,7 +12,7 @@ mod protein;
 use crate::fasta::{pairs, read_fasta};
 use crate::graph::{inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permute};
-use crate::motifs::{find_motifs, lcs};
+use crate::motifs::{find_motifs, lcs, reverse_palindrome};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
 use dna::{dna_to_rna, nucleotide_count, reverse_complement};
@@ -243,5 +243,11 @@ fn main() {
             .into_iter()
             .for_each(|p| print!("{} ", dna_prob(&dna, p)));
         println!()
+    } else if file_type == "revp" {
+        let fasta = read_fasta(&file)[0].clone();
+        let palindromes = reverse_palindrome(&fasta.dna, 4, 12);
+        palindromes
+            .iter()
+            .for_each(|(s, e)| println!("{} {}", s, e))
     }
 }

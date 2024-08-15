@@ -1,5 +1,5 @@
 use std::fs::read_to_string;
-
+#[derive(Clone)]
 pub(crate) struct FASTA {
     pub(crate) title: String,
     pub(crate) dna: String,
