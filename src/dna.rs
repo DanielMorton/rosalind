@@ -1,4 +1,4 @@
-pub(crate) fn nucleotide_count(dna: &str) -> Vec<usize> {
+pub(crate) fn dna_nucleotide_count(dna: &str) -> Vec<usize> {
     let mut count = vec![0; 4];
     for n in dna.chars() {
         if n == 'A' {
@@ -8,6 +8,22 @@ pub(crate) fn nucleotide_count(dna: &str) -> Vec<usize> {
         } else if n == 'G' {
             count[2] += 1
         } else if n == 'T' {
+            count[3] += 1
+        }
+    }
+    count
+}
+
+pub(crate) fn rna_nucleotide_count(dna: &str) -> Vec<usize> {
+    let mut count = vec![0; 4];
+    for n in dna.chars() {
+        if n == 'A' {
+            count[0] += 1
+        } else if n == 'C' {
+            count[1] += 1
+        } else if n == 'G' {
+            count[2] += 1
+        } else if n == 'U' {
             count[3] += 1
         }
     }
