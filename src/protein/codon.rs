@@ -20,7 +20,7 @@ pub(crate) fn reverse_codon(codon: &HashMap<String, String>) -> HashMap<String, 
     let mut reverse = HashMap::new();
     codon
         .iter()
-        .for_each(|(r, p)| match reverse.entry(p.clone()) {
+        .for_each(|(r, p)| match reverse.entry(p.to_owned()) {
             Entry::Vacant(e) => {
                 e.insert(vec![r.clone()]);
             }

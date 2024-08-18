@@ -1,5 +1,5 @@
 use std::fs::read_to_string;
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub(crate) struct FASTA {
     pub(crate) title: String,
     pub(crate) dna: String,
@@ -11,6 +11,10 @@ impl FASTA {
             title: title.to_owned(),
             dna: dna.to_owned(),
         }
+    }
+
+    pub(crate) fn len(&self) -> usize {
+        self.dna.len()
     }
 }
 

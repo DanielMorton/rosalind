@@ -9,14 +9,14 @@ mod parse;
 mod profile;
 mod protein;
 
-use std::cmp::{max, min};
-use crate::fasta::{pairs, read_fasta};
-use crate::graph::{inner_nodes, tree_edge_fill};
+use crate::dna::rna_nucleotide_count;
+use crate::fasta::{FASTA, pairs, read_fasta};
+use crate::graph::{align, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permute};
 use crate::motifs::{find_motifs, lcs, reverse_palindrome};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
-use dna::{dna_to_rna, dna_nucleotide_count, reverse_complement};
+use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;
 use mendel::{expected_offspring, first_law, second_law};
@@ -27,9 +27,9 @@ use protein::rna_to_protein;
 use protein::{protein_mass, rna_count};
 use regex::Regex;
 use reqwest::blocking::Client;
+use std::cmp::{max, min};
 use std::collections::HashSet;
 use std::fs;
-use crate::dna::rna_nucleotide_count;
 
 fn main() {
     let matches = parse::parse();
@@ -41,7 +41,9 @@ fn main() {
             Ok(s) => s,
             Err(e) => panic!("{:?}", e),
         };
-        dna_nucleotide_count(&dna).iter().for_each(|n| print!("{} ", n));
+        dna_nucleotide_count(&dna)
+            .iter()
+            .for_each(|n| print!("{} ", n));
         println!();
     } else if file_type == "rna" {
         let dna = match fs::read_to_string(file) {
@@ -260,13 +262,28 @@ fn main() {
         let fasta = read_fasta(&file)[0].clone();
         let count = rna_nucleotide_count(&fasta.dna);
         println!("{:?}", count);
-        println!("{}", npr(max(count[0], count[3]) as u64, min(count[0], count[3]) as u64) * npr(max(count[1], count[2]) as u64, min(count[1], count[2]) as u64))
+        println!(
+            "{}",
+            npr(
+                max(count[0], count[3]) as u64,
+                min(count[0], count[3]) as u64
+            ) * npr(
+                max(count[1], count[2]) as u64,
+                min(count[1], count[2]) as u64
+            )
+        )
     } else if file_type == "pdst" {
         let fasta = read_fasta(&file);
         fasta.iter().for_each(|f1| {
-            fasta.iter().map(|f2| hamming_distance(&f1.dna, &f2.dna))
-                .for_each(|d| print!("{} ", (d as f64)/(f1.dna.len() as f64)));
+            fasta
+                .iter()
+                .map(|f2| hamming_distance(&f1.dna, &f2.dna))
+                .for_each(|d| print!("{} ", (d as f64) / (f1.dna.len() as f64)));
             println!()
         })
+    } else if file_type == "long" {
+        let fasta = read_fasta(&file);
+        let alignment = align(&fasta);
+        println!("{}", alignment);
     }
 }
