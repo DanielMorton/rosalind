@@ -29,18 +29,21 @@ pub(crate) fn make_graph(fasta: &[FASTA]) -> HashMap<FASTA, Vec<FASTA>> {
 }
 
 pub(crate) fn reverse_graph(graph: &HashMap<FASTA, Vec<FASTA>>) -> HashMap<FASTA, Vec<FASTA>> {
-    let mut reverse = graph.keys().map(|f| (f.clone(), vec![])).collect::<HashMap<_,_>>();
+    let mut reverse = graph
+        .keys()
+        .map(|f| (f.clone(), vec![]))
+        .collect::<HashMap<_, _>>();
     graph.iter().for_each(|(key, value)| {
-        value.iter().for_each(|v| {
-            match reverse.entry(v.to_owned()) {
+        value
+            .iter()
+            .for_each(|v| match reverse.entry(v.to_owned()) {
                 Entry::Vacant(e) => {
                     e.insert(vec![key.clone()]);
                 }
                 Entry::Occupied(mut e) => {
                     e.get_mut().push(key.clone());
                 }
-            }
-        })
+            })
     });
     reverse
 }

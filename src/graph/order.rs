@@ -1,12 +1,14 @@
-use std::cmp::{max, min};
 use crate::fasta::FASTA;
-use std::collections::{HashMap, HashSet, VecDeque};
 use crate::graph::graph::reverse_graph;
 use crate::graph::make_graph;
+use std::cmp::{max, min};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 pub(crate) fn total_order(graph: &HashMap<FASTA, Vec<FASTA>>) -> Vec<FASTA> {
-    let mut reverse = reverse_graph(graph).into_iter()
-        .map(|(k, v)| (k, v.into_iter().collect::<HashSet<_>>())).collect::<HashMap<_,_>>();
+    let mut reverse = reverse_graph(graph)
+        .into_iter()
+        .map(|(k, v)| (k, v.into_iter().collect::<HashSet<_>>()))
+        .collect::<HashMap<_, _>>();
     let has_incoming = graph.values().flatten().collect::<HashSet<_>>();
     let mut starting_vertices = graph
         .keys()
@@ -35,7 +37,7 @@ pub(crate) fn align(fasta: &[FASTA]) -> String {
     let mut alignment = order.first().unwrap().to_owned().dna;
     order[1..].iter().for_each(|f| {
         for k in ((f.len() / 2)..f.len()).rev() {
-            if alignment[alignment.len()-k..] == f.dna[..k] {
+            if alignment[alignment.len() - k..] == f.dna[..k] {
                 alignment += &f.dna[k..].to_string();
                 break;
             }
