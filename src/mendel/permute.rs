@@ -11,7 +11,7 @@ pub(crate) fn permute(n: usize) -> Vec<Vec<usize>> {
     } else {
         permute(n - 1)
             .into_iter()
-            .map(|v| (0..=n - 1).map(move |i| vec![&v[..i], &vec![n][..], &v[i..]].concat()))
+            .map(|v| (0..=n - 1).map(move |i| [&v[..i], &vec![n][..], &v[i..]].concat()))
             .flatten()
             .collect::<Vec<_>>()
     }

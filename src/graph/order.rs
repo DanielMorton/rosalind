@@ -1,7 +1,6 @@
 use crate::fasta::FASTA;
 use crate::graph::graph::reverse_graph;
 use crate::graph::make_graph;
-use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet, VecDeque};
 
 pub(crate) fn total_order(graph: &HashMap<FASTA, Vec<FASTA>>) -> Vec<FASTA> {

@@ -10,7 +10,7 @@ mod profile;
 mod protein;
 
 use crate::dna::rna_nucleotide_count;
-use crate::fasta::{pairs, read_fasta, FASTA};
+use crate::fasta::{pairs, read_fasta};
 use crate::graph::{align, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permute};
 use crate::motifs::{find_motifs, lcs, reverse_palindrome};
