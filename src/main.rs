@@ -287,19 +287,31 @@ fn main() {
         println!("{}", alignment);
     } else if file_type == "sseq" {
         let fasta = read_fasta(&file);
-        get_subsequence(&fasta[0], &fasta[1]).iter().for_each(|s| print!("{} ", s));
+        get_subsequence(&fasta[0], &fasta[1])
+            .iter()
+            .for_each(|s| print!("{} ", s));
         println!()
     } else if file_type == "tran" {
         let fasta = read_fasta(&file);
         let tt = transition_transversion_ratio(&fasta[0], &fasta[1]);
         println!("{}", tt);
     } else if file_type == "lexf" {
-        let (letters, n) = fs::read_to_string(file).map(|s| {
-            let mut split = s.trim().split('\n');
-            (split.next().unwrap().split(' ').map(|c| c.to_owned()).collect::<Vec<_>>(),
-             split.next().unwrap().parse::<usize>().unwrap())
-        }).unwrap();
-        make_dictionary(&letters, n).iter().for_each(|d| println!("{}", d));
-
+        let (letters, n) = fs::read_to_string(file)
+            .map(|s| {
+                let mut split = s.trim().split('\n');
+                (
+                    split
+                        .next()
+                        .unwrap()
+                        .split(' ')
+                        .map(|c| c.to_owned())
+                        .collect::<Vec<_>>(),
+                    split.next().unwrap().parse::<usize>().unwrap(),
+                )
+            })
+            .unwrap();
+        make_dictionary(&letters, n)
+            .iter()
+            .for_each(|d| println!("{}", d));
     }
 }

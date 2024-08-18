@@ -1,3 +1,4 @@
+mod dictionary;
 mod file;
 mod find;
 mod hamming;
@@ -5,7 +6,6 @@ mod lcs;
 mod motif;
 mod palindrome;
 pub mod subsequence;
-mod dictionary;
 
 static DNA: &[&str] = &["A", "C", "G", "T"];
 

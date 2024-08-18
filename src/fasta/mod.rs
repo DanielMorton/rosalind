@@ -1,6 +1,6 @@
+mod mutate;
 mod pairs;
 mod read;
-mod mutate;
 
 pub(super) use mutate::transition_transversion_ratio;
 pub(super) use pairs::pairs;
