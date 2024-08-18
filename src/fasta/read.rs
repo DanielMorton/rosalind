@@ -19,8 +19,8 @@ impl FASTA {
 }
 
 pub(crate) fn read_fasta(file: &str) -> Vec<FASTA> {
-    match read_to_string(file).and_then(|s| {
-        Ok(s.trim()
+    match read_to_string(file).map(|s| {
+        s.trim()
             .split("\n>")
             .map(|s| {
                 let mut read = s.split('\n');
@@ -28,7 +28,7 @@ pub(crate) fn read_fasta(file: &str) -> Vec<FASTA> {
                 let dna = read.collect::<String>();
                 FASTA::new(&title, &dna)
             })
-            .collect::<Vec<_>>())
+            .collect::<Vec<_>>()
     }) {
         Ok(f) => f,
         Err(e) => panic!("{:?}", e),

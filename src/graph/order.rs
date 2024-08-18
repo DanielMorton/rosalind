@@ -37,7 +37,7 @@ pub(crate) fn align(fasta: &[FASTA]) -> String {
     order[1..].iter().for_each(|f| {
         for k in ((f.len() / 2)..f.len()).rev() {
             if alignment[alignment.len() - k..] == f.dna[..k] {
-                alignment += &f.dna[k..].to_string();
+                alignment += &f.dna[k..];
                 break;
             }
         }
