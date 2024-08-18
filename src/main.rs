@@ -10,10 +10,10 @@ mod profile;
 mod protein;
 
 use crate::dna::rna_nucleotide_count;
-use crate::fasta::{pairs, read_fasta};
+use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
 use crate::graph::{align, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permute};
-use crate::motifs::{find_motifs, lcs, reverse_palindrome};
+use crate::motifs::{find_motifs, get_subsequence, lcs, make_dictionary, reverse_palindrome};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
@@ -285,5 +285,21 @@ fn main() {
         let fasta = read_fasta(&file);
         let alignment = align(&fasta);
         println!("{}", alignment);
+    } else if file_type == "sseq" {
+        let fasta = read_fasta(&file);
+        get_subsequence(&fasta[0], &fasta[1]).iter().for_each(|s| print!("{} ", s));
+        println!()
+    } else if file_type == "tran" {
+        let fasta = read_fasta(&file);
+        let tt = transition_transversion_ratio(&fasta[0], &fasta[1]);
+        println!("{}", tt);
+    } else if file_type == "lexf" {
+        let (letters, n) = fs::read_to_string(file).map(|s| {
+            let mut split = s.trim().split('\n');
+            (split.next().unwrap().split(' ').map(|c| c.to_owned()).collect::<Vec<_>>(),
+             split.next().unwrap().parse::<usize>().unwrap())
+        }).unwrap();
+        make_dictionary(&letters, n).iter().for_each(|d| println!("{}", d));
+
     }
 }
