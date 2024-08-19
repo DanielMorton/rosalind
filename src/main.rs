@@ -2,6 +2,7 @@ mod dna;
 mod fasta;
 mod fibonacci;
 mod gc;
+mod gene;
 mod graph;
 mod mendel;
 mod motifs;
@@ -11,6 +12,7 @@ mod protein;
 
 use crate::dna::rna_nucleotide_count;
 use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
+use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
 use crate::graph::{align, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permute};
 use crate::motifs::{find_motifs, get_subsequence, lcs, make_dictionary, reverse_palindrome};
@@ -313,5 +315,21 @@ fn main() {
         make_dictionary(&letters, n)
             .iter()
             .for_each(|d| println!("{}", d));
+    } else if file_type == "lgis" {
+        let nums = fs::read_to_string(file)
+            .iter()
+            .flat_map(|s| {
+                let mut split = s.trim().split('\n');
+                let _ = split.next();
+                let line = split.collect::<String>();
+                line.split(' ').map(|c| c.parse::<u32>().unwrap()).collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>();
+        let increase = longest_increasing_sequence(&nums);
+        increase.iter().for_each(|n| print!("{} ", n));
+        println!();
+        let decrease = longest_decreasing_sequence(&nums);
+        decrease.iter().for_each(|n| print!("{} ", n));
+        println!()
     }
 }
