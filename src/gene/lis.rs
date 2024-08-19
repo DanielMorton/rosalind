@@ -40,5 +40,9 @@ pub(crate) fn longest_increasing_sequence(nums: &[u32]) -> Vec<u32> {
 
 pub(crate) fn longest_decreasing_sequence(nums: &[u32]) -> Vec<u32> {
     let reverse = nums.iter().rev().map(|&n| n).collect::<Vec<_>>();
-    longest_increasing_sequence(&reverse).iter().rev().map(|&n| n).collect::<Vec<_>>()
+    longest_increasing_sequence(&reverse)
+        .iter()
+        .rev()
+        .map(|&n| n)
+        .collect::<Vec<_>>()
 }

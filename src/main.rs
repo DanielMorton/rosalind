@@ -322,7 +322,9 @@ fn main() {
                 let mut split = s.trim().split('\n');
                 let _ = split.next();
                 let line = split.collect::<String>();
-                line.split(' ').map(|c| c.parse::<u32>().unwrap()).collect::<Vec<_>>()
+                line.split(' ')
+                    .map(|c| c.parse::<u32>().unwrap())
+                    .collect::<Vec<_>>()
             })
             .collect::<Vec<_>>();
         let increase = longest_increasing_sequence(&nums);
