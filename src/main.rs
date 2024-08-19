@@ -14,7 +14,7 @@ use crate::dna::rna_nucleotide_count;
 use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
 use crate::graph::{align, inner_nodes, tree_edge_fill};
-use crate::mendel::{dna_prob, factorial, npr, permute};
+use crate::mendel::{dna_prob, factorial, npr, permutation_list, permute};
 use crate::motifs::{find_motifs, get_subsequence, lcs, make_dictionary, reverse_palindrome};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
@@ -333,5 +333,17 @@ fn main() {
         let decrease = longest_decreasing_sequence(&nums);
         decrease.iter().for_each(|n| print!("{} ", n));
         println!()
+    } else if file_type == "sign" {
+        let n = fs::read_to_string(file)
+            .unwrap()
+            .trim()
+            .parse::<i32>()
+            .unwrap();
+        let p_list = permutation_list(n);
+        println!("{}", p_list.len());
+        p_list.iter().for_each(|v| {
+            v.iter().for_each(|p| print!("{} ", p));
+            println!();
+        })
     }
 }
