@@ -1,6 +1,6 @@
 use crate::fasta::FASTA;
-use crate::motifs::DNA;
 use generalized_suffix_tree::GeneralizedSuffixTree;
+use crate::util::DNA;
 
 pub(crate) fn lcs(fasta: &[FASTA]) -> String {
     let mut tree = GeneralizedSuffixTree::new();

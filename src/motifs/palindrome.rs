@@ -1,26 +1,7 @@
-use crate::motifs::PAIRS;
-use std::collections::HashMap;
-use std::fs;
-
-pub(crate) fn read_pair() -> HashMap<char, char> {
-    let codons = match fs::read_to_string(PAIRS) {
-        Ok(s) => s,
-        Err(e) => panic!("{:?}", e),
-    };
-    codons
-        .split('\n')
-        .map(|pair| pair.split(' ').collect::<Vec<_>>())
-        .map(|pair| {
-            (
-                pair[0].chars().next().unwrap(),
-                pair[1].chars().next().unwrap(),
-            )
-        })
-        .collect::<HashMap<_, _>>()
-}
+use crate::util::{read_pair, DNA_PAIRS};
 
 pub(crate) fn reverse_palindrome(dna: &str, min_len: usize, max_len: usize) -> Vec<(usize, usize)> {
-    let pairs = read_pair();
+    let pairs = read_pair(&DNA_PAIRS);
     let mut dp = vec![vec![false; dna.len()]; dna.len()];
     for i in 0..dna.len() {
         dp[i][i] = false;

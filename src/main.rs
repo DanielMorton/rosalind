@@ -9,11 +9,12 @@ mod motifs;
 mod parse;
 mod profile;
 mod protein;
+mod util;
 
 use crate::dna::rna_nucleotide_count;
 use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
-use crate::graph::{align, inner_nodes, tree_edge_fill};
+use crate::graph::{align, catalan_number, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permutation_list, permute};
 use crate::motifs::{find_motifs, get_subsequence, lcs, make_dictionary, reverse_palindrome};
 use crate::profile::find_consensus;
@@ -345,5 +346,8 @@ fn main() {
             v.iter().for_each(|p| print!("{} ", p));
             println!();
         })
+    } else if file_type == "cat" {
+        let fasta = read_fasta(&file);
+        println!("{}", catalan_number(&fasta[0].dna))
     }
 }

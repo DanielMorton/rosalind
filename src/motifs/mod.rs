@@ -7,10 +7,6 @@ mod motif;
 mod palindrome;
 pub mod subsequence;
 
-static DNA: &[&str] = &["A", "C", "G", "T"];
-
-static PAIRS: &str = "/Users/dmorton/IdeaProjects/rosalind/dna_pair.txt";
-
 pub(super) use dictionary::make_dictionary;
 pub(super) use file::read_two_line;
 pub(super) use find::find_motifs;
