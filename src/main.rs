@@ -159,7 +159,7 @@ fn main() {
     } else if file_type == "cons" {
         let dna_list = read_fasta(&file)
             .iter()
-            .map(|f| f.dna.clone())
+            .map(|f| f.text.clone())
             .collect::<Vec<_>>();
         println!("{}", find_consensus(&dna_list))
     } else if file_type == "orf" {
@@ -178,8 +178,11 @@ fn main() {
             .for_each(|orf| println!("{orf}"))
     } else if file_type == "splc" {
         let fasta = read_fasta(&file);
-        let dna = fasta[0].dna.clone();
-        let introns = fasta[1..].iter().map(|f| f.dna.clone()).collect::<Vec<_>>();
+        let dna = fasta[0].text.clone();
+        let introns = fasta[1..]
+            .iter()
+            .map(|f| f.text.clone())
+            .collect::<Vec<_>>();
         println!("{}", rna_splice(&dna, &introns))
     } else if file_type == "lcsm" {
         let fasta = read_fasta(&file);
@@ -252,18 +255,18 @@ fn main() {
         println!()
     } else if file_type == "revp" {
         let fasta = read_fasta(&file)[0].clone();
-        let palindromes = reverse_palindrome(&fasta.dna, 4, 12);
+        let palindromes = reverse_palindrome(&fasta.text, 4, 12);
         palindromes
             .iter()
             .for_each(|(s, e)| println!("{} {}", s, e))
     } else if file_type == "pmch" {
         let fasta = read_fasta(&file)[0].clone();
-        let count = rna_nucleotide_count(&fasta.dna);
+        let count = rna_nucleotide_count(&fasta.text);
         println!("{:?}", count);
         println!("{}", factorial(count[0]) * factorial(count[1]))
     } else if file_type == "mmch" {
         let fasta = read_fasta(&file)[0].clone();
-        let count = rna_nucleotide_count(&fasta.dna);
+        let count = rna_nucleotide_count(&fasta.text);
         println!("{:?}", count);
         println!(
             "{}",
@@ -280,8 +283,8 @@ fn main() {
         fasta.iter().for_each(|f1| {
             fasta
                 .iter()
-                .map(|f2| hamming_distance(&f1.dna, &f2.dna))
-                .for_each(|d| print!("{} ", (d as f64) / (f1.dna.len() as f64)));
+                .map(|f2| hamming_distance(&f1.text, &f2.text))
+                .for_each(|d| print!("{} ", (d as f64) / (f1.text.len() as f64)));
             println!()
         })
     } else if file_type == "long" {
@@ -348,6 +351,6 @@ fn main() {
         })
     } else if file_type == "cat" {
         let fasta = read_fasta(&file);
-        println!("{}", catalan_number(&fasta[0].dna))
+        println!("{}", catalan_number(&fasta[0].text))
     }
 }

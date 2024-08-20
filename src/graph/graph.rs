@@ -10,7 +10,7 @@ pub(crate) fn make_graph(fasta: &[FASTA]) -> HashMap<FASTA, Vec<FASTA>> {
         fasta.iter().for_each(|f2| {
             if f1 != f2 {
                 for k in (max(f1.len() / 2, f2.len() / 2)..min(f1.len(), f2.len())).rev() {
-                    if f1.dna[f1.len() - k..] == f2.dna[..k] {
+                    if f1.text[f1.len() - k..] == f2.text[..k] {
                         match graph.entry(f1.to_owned()) {
                             Entry::Vacant(e) => {
                                 e.insert(vec![f2.clone()]);

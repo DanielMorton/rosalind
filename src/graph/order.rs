@@ -33,11 +33,11 @@ pub(crate) fn total_order(graph: &HashMap<FASTA, Vec<FASTA>>) -> Vec<FASTA> {
 pub(crate) fn align(fasta: &[FASTA]) -> String {
     let graph = make_graph(fasta);
     let order = total_order(&graph);
-    let mut alignment = order.first().unwrap().to_owned().dna;
+    let mut alignment = order.first().unwrap().to_owned().text;
     order[1..].iter().for_each(|f| {
         for k in ((f.len() / 2)..f.len()).rev() {
-            if alignment[alignment.len() - k..] == f.dna[..k] {
-                alignment += &f.dna[k..];
+            if alignment[alignment.len() - k..] == f.text[..k] {
+                alignment += &f.text[k..];
                 break;
             }
         }

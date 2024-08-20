@@ -2,7 +2,7 @@ use crate::fasta::FASTA;
 
 fn transition_transversion_count(f1: &FASTA, f2: &FASTA) -> (u32, u32) {
     let (mut transitions, mut transversions) = (0, 0);
-    f1.dna.chars().zip(f2.dna.chars()).for_each(|(n1, n2)| {
+    f1.text.chars().zip(f2.text.chars()).for_each(|(n1, n2)| {
         if (n1 == 'A' && n2 == 'G')
             || (n1 == 'G' && n2 == 'A')
             || (n1 == 'C' && n2 == 'T')
