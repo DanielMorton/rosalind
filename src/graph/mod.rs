@@ -2,6 +2,8 @@ mod catalan;
 mod graph;
 mod order;
 mod tree;
+mod degree;
+mod edges;
 
 pub(super) use catalan::catalan_number;
 pub(super) use graph::make_graph;

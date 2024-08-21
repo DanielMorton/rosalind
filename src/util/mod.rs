@@ -1,5 +1,7 @@
 mod pairs;
+mod string;
 
+pub(super) use string::{read_num_list, read_string, read_two_line, read_vec};
 pub(super) use pairs::read_pair;
 
 pub(super) static DNA: &[&str] = &["A", "C", "G", "T"];

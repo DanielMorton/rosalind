@@ -1,6 +1,6 @@
-pub(crate) fn make_dictionary(letters: &[String], n: usize) -> Vec<String> {
+pub(crate) fn make_dictionary(letters: &[&str], n: usize) -> Vec<String> {
     if n == 1 {
-        letters.to_vec()
+        letters.iter().map(|l| l.to_string()).collect::<Vec<_>>()
     } else {
         make_dictionary(&letters, n - 1)
             .iter()

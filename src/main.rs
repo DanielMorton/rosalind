@@ -16,7 +16,7 @@ use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
 use crate::graph::{align, catalan_number, inner_nodes, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permutation_list, permute};
-use crate::motifs::{find_motifs, get_subsequence, lcs, make_dictionary, reverse_palindrome};
+use crate::motifs::{build_failure_array, find_motifs, get_subsequence, kmer_count, lcs, make_dictionary, reverse_palindrome};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
@@ -24,7 +24,7 @@ use fibonacci::k_fibonacci;
 use gc::gc_max;
 use mendel::{expected_offspring, first_law, second_law};
 use motifs::motif_start;
-use motifs::{hamming_distance, read_two_line};
+use motifs::hamming_distance;
 use parse::RosalindParse;
 use protein::rna_to_protein;
 use protein::{protein_mass, rna_count};
@@ -33,6 +33,7 @@ use reqwest::blocking::Client;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 use std::fs;
+use crate::util::{DNA, read_num_list, read_string, read_two_line, read_vec};
 
 fn main() {
     let matches = parse::parse();
@@ -40,26 +41,17 @@ fn main() {
     let file = matches.get_file();
 
     if file_type == "dna" || file_type == "ini" {
-        let dna = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let dna = read_string(&file);
         dna_nucleotide_count(&dna)
             .iter()
             .for_each(|n| print!("{} ", n));
         println!();
     } else if file_type == "rna" {
-        let dna = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let dna = read_string(&file);
         let rna = dna_to_rna(&dna);
         println!("{}", rna)
     } else if file_type == "revc" {
-        let dna = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let dna = read_string(&file);
         let revc = reverse_complement(&dna);
         println!("{}", revc)
     } else if file_type == "iprb" {
@@ -91,37 +83,21 @@ fn main() {
         println!("{title}");
         println!("{gc}")
     } else if file_type == "prot" {
-        let rna = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let rna = read_string(&file);
         let protein = rna_to_protein(&rna);
         println!("{protein}")
     } else if file_type == "subs" {
         let (dna, motif) = read_two_line(&file);
-        let positions = motif_start(&dna, &motif);
-        positions.iter().for_each(|p| print!("{p} "));
+        motif_start(&dna, &motif).iter().for_each(|p| print!("{p} "));
         println!();
     } else if file_type == "hamm" {
         let (s, t) = read_two_line(&file);
-        let h = hamming_distance(&s, &t);
-        println!("{h}")
+        println!("{}", hamming_distance(&s, &t))
     } else if file_type == "iev" {
-        let nums = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
-        let num_vec = nums
-            .trim()
-            .split(' ')
-            .map(|n| n.parse::<u32>().unwrap())
-            .collect::<Vec<_>>();
-        println!("{}", expected_offspring(&num_vec))
+        let nums = read_num_list::<u32>(&file, ' ');
+        println!("{}", expected_offspring(&nums))
     } else if file_type == "mrna" {
-        let protein = match fs::read_to_string(file) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let protein = read_string(&file);
         println!("{}", rna_count(&protein))
     } else if file_type == "lia" {
         let nums = match fs::read_to_string(file) {
@@ -135,24 +111,13 @@ fn main() {
         );
         println!("{}", second_law(k, n, 0.25))
     } else if file_type == "prtm" {
-        let protein = match fs::read_to_string(file) {
-            Ok(s) => s.trim().to_owned(),
-            Err(e) => panic!("{:?}", e),
-        };
+        let protein = read_string(&file);
         println!("{}", protein_mass(&protein))
     } else if file_type == "grph" {
         let edges = pairs(&file, 3);
         edges.iter().for_each(|(f1, f2)| println!("{} {}", f1, f2))
     } else if file_type == "mprt" {
-        let names = match fs::read_to_string(file).map(|s| {
-            s.trim()
-                .split('\n')
-                .map(|t| t.to_owned())
-                .collect::<Vec<_>>()
-        }) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let names = read_vec(&file, '\n');
         let client = Client::new();
         let re = Regex::new("N[^P](S|T)[^P]").unwrap();
         find_motifs(&client, &names, &re)
@@ -316,7 +281,7 @@ fn main() {
                 )
             })
             .unwrap();
-        make_dictionary(&letters, n)
+        make_dictionary(&letters.iter().map(|l| l.as_str()).collect::<Vec<_>>(), n)
             .iter()
             .for_each(|d| println!("{}", d));
     } else if file_type == "lgis" {
@@ -352,5 +317,17 @@ fn main() {
     } else if file_type == "cat" {
         let fasta = read_fasta(&file);
         println!("{}", catalan_number(&fasta[0].text))
+    } else if file_type == "kmp" {
+        let fasta = read_fasta(&file);
+        build_failure_array(&fasta[0].text.chars().collect::<Vec<_>>())
+            .iter()
+            .for_each(|n| print!("{} ", n));
+        println!();
+    } else if file_type == "kmer" {
+        let fasta = read_fasta(&file);
+        let dna_dict = make_dictionary(DNA, 4);
+        let counts = kmer_count(&fasta[0].text.trim(), 4);
+        dna_dict.iter().for_each(|d| print!("{} ", counts.get(d).unwrap_or(&0)));
+        println!()
     }
 }
