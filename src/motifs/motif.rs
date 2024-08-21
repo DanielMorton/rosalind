@@ -1,4 +1,3 @@
-use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 pub(crate) fn motif_start(dna: &str, motif: &str) -> Vec<usize> {

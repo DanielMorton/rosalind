@@ -7,5 +7,5 @@ pub(crate) fn read_edges(file: &str) -> Vec<(u32, u32)> {
                 let mut split = s.split(' ');
                 (split.next().map(|c| c.parse::<u32>()).unwrap().unwrap(),
                  split.next().map(|c| c.parse::<u32>()).unwrap().unwrap())
-            }).collect::<Vec<_>>()).unwrap()
+            }).collect::<Vec<_>>()).unwrap()[1..].to_owned()
 }

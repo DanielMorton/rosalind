@@ -14,7 +14,7 @@ mod util;
 use crate::dna::rna_nucleotide_count;
 use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
-use crate::graph::{align, catalan_number, inner_nodes, tree_edge_fill};
+use crate::graph::{align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill};
 use crate::mendel::{dna_prob, factorial, npr, permutation_list, permute};
 use crate::motifs::{build_failure_array, find_motifs, get_subsequence, kmer_count, lcs, make_dictionary, reverse_palindrome};
 use crate::profile::find_consensus;
@@ -33,7 +33,7 @@ use reqwest::blocking::Client;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 use std::fs;
-use crate::util::{DNA, read_num_list, read_string, read_two_line, read_vec};
+use crate::util::{binary_search, DNA, read_num_list, read_string, read_two_line, read_vec};
 
 fn main() {
     let matches = parse::parse();
@@ -128,14 +128,8 @@ fn main() {
             .collect::<Vec<_>>();
         println!("{}", find_consensus(&dna_list))
     } else if file_type == "orf" {
-        let dna = match fs::read_to_string(file).map(|s| {
-            let mut split = s.split('\n');
-            let _ = split.next();
-            split.collect::<String>()
-        }) {
-            Ok(s) => s,
-            Err(e) => panic!("{:?}", e),
-        };
+        let fasta = read_fasta(&file);
+        let dna = fasta[0].text.clone();
         find_orfs(&dna)
             .iter()
             .collect::<HashSet<_>>()
@@ -328,6 +322,18 @@ fn main() {
         let dna_dict = make_dictionary(DNA, 4);
         let counts = kmer_count(&fasta[0].text.trim(), 4);
         dna_dict.iter().for_each(|d| print!("{} ", counts.get(d).unwrap_or(&0)));
+        println!()
+    } else if file_type == "deg" {
+        let edges = read_edges(&file);
+        let degrees = edges_to_degrees(&edges);
+        degrees.iter().for_each(|d| print!("{} ", d));
+        println!()
+    } else if file_type == "bins" {
+        let text = read_string(&file);
+        let split = text.trim().split('\n').collect::<Vec<_>>();
+        let nums = split[2].split(' ').flat_map(|s| s.parse::<i32>()).collect::<Vec<_>>();
+        let values = split[3].split(' ').flat_map(|s| s.parse::<i32>()).collect::<Vec<_>>();
+        values.into_iter().for_each(|v| print!("{} ", binary_search(&nums, v)));
         println!()
     }
 }

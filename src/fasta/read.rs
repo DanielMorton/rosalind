@@ -1,22 +1,5 @@
 use std::fs::read_to_string;
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub(crate) struct FASTA {
-    pub(crate) title: String,
-    pub(crate) text: String,
-}
-
-impl FASTA {
-    fn new(title: &str, dna: &str) -> Self {
-        FASTA {
-            title: title.to_owned(),
-            text: dna.to_owned(),
-        }
-    }
-
-    pub(crate) fn len(&self) -> usize {
-        self.text.len()
-    }
-}
+use crate::fasta::FASTA;
 
 pub(crate) fn read_fasta(file: &str) -> Vec<FASTA> {
     match read_to_string(file).map(|s| {
