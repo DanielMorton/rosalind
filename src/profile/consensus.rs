@@ -1,6 +1,7 @@
+use crate::fasta::dna;
 use crate::profile::DNA;
 
-pub(crate) fn find_consensus(dna_list: &[String]) -> String {
+pub(crate) fn find_consensus(dna_list: &[dna]) -> String {
     let length = dna_list[0].len();
     let mut profile = vec![vec![0usize; 4]; length];
     dna_list.iter().for_each(|dna| {

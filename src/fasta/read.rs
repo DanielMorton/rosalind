@@ -1,16 +1,11 @@
-use std::fs::read_to_string;
 use crate::fasta::FASTA;
+use std::fs::read_to_string;
 
 pub(crate) fn read_fasta(file: &str) -> Vec<FASTA> {
     match read_to_string(file).map(|s| {
         s.trim()
             .split("\n>")
-            .map(|s| {
-                let mut read = s.split('\n');
-                let title = read.next().unwrap().replace('>', "");
-                let dna = read.collect::<String>();
-                FASTA::new(&title, &dna)
-            })
+            .map(|s| FASTA::read(s))
             .collect::<Vec<_>>()
     }) {
         Ok(f) => f,

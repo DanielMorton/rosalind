@@ -1,6 +1,6 @@
 mod pairs;
-mod string;
 mod search;
+mod string;
 
 pub(super) use pairs::read_pair;
 pub(super) use search::binary_search;

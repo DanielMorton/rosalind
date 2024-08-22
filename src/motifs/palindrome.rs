@@ -1,6 +1,7 @@
+use crate::fasta::dna;
 use crate::util::{read_pair, DNA_PAIRS};
 
-pub(crate) fn reverse_palindrome(dna: &str, min_len: usize, max_len: usize) -> Vec<(usize, usize)> {
+pub(crate) fn reverse_palindrome(dna: &dna, min_len: usize, max_len: usize) -> Vec<(usize, usize)> {
     let pairs = read_pair(&DNA_PAIRS);
     let mut dp = vec![vec![false; dna.len()]; dna.len()];
     for i in 0..dna.len() {

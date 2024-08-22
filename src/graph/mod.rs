@@ -1,9 +1,9 @@
 mod catalan;
+mod degree;
+mod edges;
 mod graph;
 mod order;
 mod tree;
-mod degree;
-mod edges;
 
 pub(super) use catalan::catalan_number;
 pub(super) use degree::edges_to_degrees;

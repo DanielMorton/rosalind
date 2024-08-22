@@ -12,19 +12,25 @@ mod protein;
 mod util;
 
 use crate::dna::rna_nucleotide_count;
-use crate::fasta::{pairs, read_fasta, transition_transversion_ratio};
+use crate::fasta::{pairs, read_fasta, transition_transversion_ratio, FASTA};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
-use crate::graph::{align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill};
+use crate::graph::{
+    align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill,
+};
 use crate::mendel::{dna_prob, factorial, npr, permutation_list, permute};
-use crate::motifs::{build_failure_array, find_motifs, get_subsequence, kmer_count, lcs, make_dictionary, reverse_palindrome};
+use crate::motifs::{
+    build_failure_array, find_motifs, get_subsequence, kmer_count, lcs, make_dictionary,
+    reverse_palindrome,
+};
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
+use crate::util::{binary_search, read_num_list, read_string, read_two_line, read_vec, DNA};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;
 use mendel::{expected_offspring, first_law, second_law};
-use motifs::motif_start;
 use motifs::hamming_distance;
+use motifs::motif_start;
 use parse::RosalindParse;
 use protein::rna_to_protein;
 use protein::{protein_mass, rna_count};
@@ -33,7 +39,6 @@ use reqwest::blocking::Client;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 use std::fs;
-use crate::util::{binary_search, DNA, read_num_list, read_string, read_two_line, read_vec};
 
 fn main() {
     let matches = parse::parse();
@@ -88,7 +93,9 @@ fn main() {
         println!("{protein}")
     } else if file_type == "subs" {
         let (dna, motif) = read_two_line(&file);
-        motif_start(&dna, &motif).iter().for_each(|p| print!("{p} "));
+        motif_start(&dna, &motif)
+            .iter()
+            .for_each(|p| print!("{p} "));
         println!();
     } else if file_type == "hamm" {
         let (s, t) = read_two_line(&file);
@@ -122,10 +129,7 @@ fn main() {
         let re = Regex::new("N[^P](S|T)[^P]").unwrap();
         find_motifs(&client, &names, &re)
     } else if file_type == "cons" {
-        let dna_list = read_fasta(&file)
-            .iter()
-            .map(|f| f.text.clone())
-            .collect::<Vec<_>>();
+        let dna_list = read_fasta(&file);
         println!("{}", find_consensus(&dna_list))
     } else if file_type == "orf" {
         let fasta = read_fasta(&file);
@@ -213,8 +217,8 @@ fn main() {
             .for_each(|p| print!("{} ", dna_prob(&dna, p)));
         println!()
     } else if file_type == "revp" {
-        let fasta = read_fasta(&file)[0].clone();
-        let palindromes = reverse_palindrome(&fasta.text, 4, 12);
+        let fasta = FASTA::read_file(&file);
+        let palindromes = reverse_palindrome(&fasta, 4, 12);
         palindromes
             .iter()
             .for_each(|(s, e)| println!("{} {}", s, e))
@@ -309,8 +313,8 @@ fn main() {
             println!();
         })
     } else if file_type == "cat" {
-        let fasta = read_fasta(&file);
-        println!("{}", catalan_number(&fasta[0].text))
+        let fasta = FASTA::read_file(&file);
+        println!("{}", catalan_number(&fasta))
     } else if file_type == "kmp" {
         let fasta = read_fasta(&file);
         build_failure_array(&fasta[0].text.chars().collect::<Vec<_>>())
@@ -318,10 +322,12 @@ fn main() {
             .for_each(|n| print!("{} ", n));
         println!();
     } else if file_type == "kmer" {
-        let fasta = read_fasta(&file);
+        let fasta = FASTA::read_file(&file);
         let dna_dict = make_dictionary(DNA, 4);
-        let counts = kmer_count(&fasta[0].text.trim(), 4);
-        dna_dict.iter().for_each(|d| print!("{} ", counts.get(d).unwrap_or(&0)));
+        let counts = kmer_count(&fasta.text, 4);
+        dna_dict
+            .iter()
+            .for_each(|d| print!("{} ", counts.get(d).unwrap_or(&0)));
         println!()
     } else if file_type == "deg" {
         let edges = read_edges(&file);
@@ -331,9 +337,17 @@ fn main() {
     } else if file_type == "bins" {
         let text = read_string(&file);
         let split = text.trim().split('\n').collect::<Vec<_>>();
-        let nums = split[2].split(' ').flat_map(|s| s.parse::<i32>()).collect::<Vec<_>>();
-        let values = split[3].split(' ').flat_map(|s| s.parse::<i32>()).collect::<Vec<_>>();
-        values.into_iter().for_each(|v| print!("{} ", binary_search(&nums, v)));
+        let nums = split[2]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        let values = split[3]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        values
+            .into_iter()
+            .for_each(|v| print!("{} ", binary_search(&nums, v)));
         println!()
     }
 }

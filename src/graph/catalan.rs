@@ -1,3 +1,4 @@
+use crate::fasta::rna;
 use crate::util::{read_pair, RNA_PAIRS};
 use std::collections::HashMap;
 
@@ -34,7 +35,7 @@ fn catalan_dp(
     }
 }
 
-pub(crate) fn catalan_number(rna: &str) -> u64 {
+pub(crate) fn catalan_number(rna: &rna) -> u64 {
     let rna_pair = read_pair(&RNA_PAIRS);
     let rna_vec = rna.chars().collect::<Vec<_>>();
     let mut dp = HashMap::new();

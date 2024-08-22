@@ -1,8 +1,12 @@
 use std::fs;
 use std::str::FromStr;
 
-pub(crate) fn read_num_list<T:FromStr>(file: &str, sep: char) -> Vec<T> {
-    read_string(file).trim().split(sep).flat_map(|s| s.parse::<T>()).collect::<Vec<_>>()
+pub(crate) fn read_num_list<T: FromStr>(file: &str, sep: char) -> Vec<T> {
+    read_string(file)
+        .trim()
+        .split(sep)
+        .flat_map(|s| s.parse::<T>())
+        .collect::<Vec<_>>()
 }
 
 pub(crate) fn read_string(file: &str) -> String {
@@ -24,7 +28,7 @@ pub(crate) fn read_two_line(file: &str) -> (String, String) {
 pub(crate) fn read_vec(file: &str, sep: char) -> Vec<String> {
     let text = read_string(file);
     text.trim()
-            .split(sep)
-            .map(|t| t.to_owned())
-            .collect::<Vec<_>>()
+        .split(sep)
+        .map(|t| t.to_owned())
+        .collect::<Vec<_>>()
 }
