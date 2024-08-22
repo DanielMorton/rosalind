@@ -32,3 +32,7 @@ pub(crate) fn read_vec(file: &str, sep: char) -> Vec<String> {
         .map(|t| t.to_owned())
         .collect::<Vec<_>>()
 }
+
+pub(crate) fn read_lines(file: &str) -> Vec<String> {
+    read_vec(file, '\n')
+}

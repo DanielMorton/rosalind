@@ -24,7 +24,7 @@ use crate::motifs::{
 };
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
-use crate::util::{binary_search, read_num_list, read_string, read_two_line, read_vec, DNA};
+use crate::util::{binary_search, merge, merge_sort, read_lines, read_num_list, read_string, read_two_line, read_vec, DNA, inversion_count};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;
@@ -349,5 +349,39 @@ fn main() {
             .into_iter()
             .for_each(|v| print!("{} ", binary_search(&nums, v)));
         println!()
+    } else if file_type == "mer" {
+        let text = read_lines(&file);
+        let lines = text
+            .iter()
+            .enumerate()
+            .filter(|(i, s)| i % 2 == 1)
+            .map(|(_, s)| s)
+            .collect::<Vec<_>>();
+        let arr1 = lines[0]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        let arr2 = lines[1]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        let arr = merge(&arr1, &arr2);
+        arr.iter().for_each(|n| print!("{} ", n));
+        println!();
+    } else if file_type == "ms" {
+        let lines = read_lines(&file);
+        let arr = lines[1]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        merge_sort(&arr).iter().for_each(|s| print!("{} ", s));
+        println!()
+    } else if file_type == "inv" {
+        let lines = read_lines(&file);
+        let arr = lines[1]
+            .split(' ')
+            .flat_map(|s| s.parse::<i32>())
+            .collect::<Vec<_>>();
+        println!("{}", inversion_count(&arr))
     }
 }

@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 pub(crate) fn binary_search<T: PartialOrd>(arr: &[T], val: T) -> i32 {
     let (mut left, mut right) = (0, arr.len());
     while left <= right {
