@@ -24,7 +24,10 @@ use crate::motifs::{
 };
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
-use crate::util::{binary_search, merge, merge_sort, read_lines, read_num_list, read_string, read_two_line, read_vec, DNA, inversion_count};
+use crate::util::{
+    binary_search, inversion_count, merge, merge_sort, read_lines, read_num_list, read_string,
+    read_two_line, read_vec, DNA,
+};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;

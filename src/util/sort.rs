@@ -1,7 +1,8 @@
 pub(crate) fn inversion_count<T: PartialOrd + Copy>(arr: &[T]) -> usize {
-    arr.iter().enumerate().map(|(i, n)|{
-        arr[i+1..].iter().filter(|&a| a < n).count()
-    }).sum()
+    arr.iter()
+        .enumerate()
+        .map(|(i, n)| arr[i + 1..].iter().filter(|&a| a < n).count())
+        .sum()
 }
 
 pub(crate) fn merge<T: PartialOrd + Copy>(arr1: &[T], arr2: &[T]) -> Vec<T> {
