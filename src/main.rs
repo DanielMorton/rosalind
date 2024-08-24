@@ -24,10 +24,7 @@ use crate::motifs::{
 };
 use crate::profile::find_consensus;
 use crate::protein::{find_orfs, rna_splice};
-use crate::util::{
-    binary_search, inversion_count, merge, merge_sort, read_lines, read_num_list, read_string,
-    read_two_line, read_vec, DNA,
-};
+use crate::util::{binary_search, inversion_count, merge, merge_sort, read_lines, read_num_list, read_string, read_two_line, read_vec, DNA, two_sum};
 use dna::{dna_nucleotide_count, dna_to_rna, reverse_complement};
 use fibonacci::k_fibonacci;
 use gc::gc_max;
@@ -386,5 +383,17 @@ fn main() {
             .flat_map(|s| s.parse::<i32>())
             .collect::<Vec<_>>();
         println!("{}", inversion_count(&arr))
+    } else if file_type == "2sum" {
+        let lines = read_lines(&file)[1..]
+            .iter()
+            .map(|l| {
+                l.split(' ')
+                    .flat_map(|s| s.parse::<i32>())
+                    .collect::<Vec<_>>()
+            }).map(|v| two_sum(&v)).collect::<Vec<_>>();
+        lines.iter().for_each(|v| {
+            v.iter().for_each(|a| print!("{} ", a));
+            println!()
+        })
     }
 }
