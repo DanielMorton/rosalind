@@ -357,7 +357,7 @@ fn main() {
         let lines = text
             .iter()
             .enumerate()
-            .filter(|(i, s)| i % 2 == 1)
+            .filter(|(i, _)| i % 2 == 1)
             .map(|(_, s)| s)
             .collect::<Vec<_>>();
         let arr1 = lines[0]

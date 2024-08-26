@@ -1,4 +1,4 @@
-use crate::fasta::{dna, FASTA};
+use crate::fasta::dna;
 
 fn transition_transversion_count(f1: &dna, f2: &dna) -> (u32, u32) {
     let (mut transitions, mut transversions) = (0, 0);

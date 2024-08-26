@@ -10,7 +10,7 @@ pub(crate) fn two_sum(arr: &[i32]) -> Vec<i32> {
             Entry::Vacant(_) => {
                 elements.insert(a, i);
             }
-            Entry::Occupied(mut e) => {
+            Entry::Occupied(e) => {
                 pair = vec![(e.get() + 1) as i32, (i + 1) as i32];
             }
         });
