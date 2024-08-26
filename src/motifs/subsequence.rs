@@ -1,6 +1,6 @@
-use crate::fasta::FASTA;
+use crate::fasta::Fasta;
 
-pub(crate) fn get_subsequence(text: &FASTA, pattern: &FASTA) -> Vec<usize> {
+pub(crate) fn get_subsequence(text: &Fasta, pattern: &Fasta) -> Vec<usize> {
     let mut t = 0usize;
     let text_chars = text.chars().collect::<Vec<_>>();
     pattern

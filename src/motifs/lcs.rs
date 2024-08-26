@@ -1,8 +1,8 @@
-use crate::fasta::FASTA;
+use crate::fasta::Fasta;
 use crate::util::DNA;
 use generalized_suffix_tree::GeneralizedSuffixTree;
 
-pub(crate) fn lcs(fasta: &[FASTA]) -> String {
+pub(crate) fn lcs(fasta: &[Fasta]) -> String {
     let mut tree = GeneralizedSuffixTree::new();
     let mut i = 0;
     fasta.iter().for_each(|f| {

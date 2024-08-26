@@ -23,7 +23,7 @@ pub(crate) fn reverse_palindrome(dna: &dna, min_len: usize, max_len: usize) -> V
     let mut p = Vec::new();
     for i in 0..dna.len() {
         for j in i..dna.len() {
-            if j - i + 1 >= min_len && j - i + 1 <= max_len && dp[i][j] {
+            if j - i + 1 >= min_len && j - i < max_len && dp[i][j] {
                 p.push((i + 1, j - i + 1))
             }
         }

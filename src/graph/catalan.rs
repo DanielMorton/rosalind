@@ -11,7 +11,7 @@ fn catalan_dp(
 ) -> u64 {
     if (right - left) % 2 == 0 {
         0
-    } else if left >= right || left >= rna.len() || right + 1 <= 0 {
+    } else if left >= right || left >= rna.len() || right + 1 == 0 {
         1
     } else if dp.contains_key(&(left, right)) {
         dp.get(&(left, right)).unwrap().to_owned()

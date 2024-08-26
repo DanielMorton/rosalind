@@ -1,9 +1,9 @@
-use crate::fasta::FASTA;
+use crate::fasta::Fasta;
 use crate::graph::graph::reverse_graph;
 use crate::graph::make_graph;
 use std::collections::{HashMap, HashSet, VecDeque};
 
-pub(crate) fn total_order(graph: &HashMap<FASTA, Vec<FASTA>>) -> Vec<FASTA> {
+pub(crate) fn total_order(graph: &HashMap<Fasta, Vec<Fasta>>) -> Vec<Fasta> {
     let mut reverse = reverse_graph(graph)
         .into_iter()
         .map(|(k, v)| (k, v.into_iter().collect::<HashSet<_>>()))
@@ -30,7 +30,7 @@ pub(crate) fn total_order(graph: &HashMap<FASTA, Vec<FASTA>>) -> Vec<FASTA> {
     order
 }
 
-pub(crate) fn align(fasta: &[FASTA]) -> String {
+pub(crate) fn align(fasta: &[Fasta]) -> String {
     let graph = make_graph(fasta);
     let order = total_order(&graph);
     let mut alignment = order.first().unwrap().to_owned().text;

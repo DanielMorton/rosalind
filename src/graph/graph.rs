@@ -1,9 +1,9 @@
-use crate::fasta::FASTA;
+use crate::fasta::Fasta;
 use std::cmp::{max, min};
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
-pub(crate) fn make_graph(fasta: &[FASTA]) -> HashMap<FASTA, Vec<FASTA>> {
+pub(crate) fn make_graph(fasta: &[Fasta]) -> HashMap<Fasta, Vec<Fasta>> {
     let mut graph = HashMap::new();
     fasta.iter().for_each(|f1| {
         graph.insert(f1.to_owned(), vec![]);
@@ -28,7 +28,7 @@ pub(crate) fn make_graph(fasta: &[FASTA]) -> HashMap<FASTA, Vec<FASTA>> {
     graph
 }
 
-pub(crate) fn reverse_graph(graph: &HashMap<FASTA, Vec<FASTA>>) -> HashMap<FASTA, Vec<FASTA>> {
+pub(crate) fn reverse_graph(graph: &HashMap<Fasta, Vec<Fasta>>) -> HashMap<Fasta, Vec<Fasta>> {
     let mut reverse = graph
         .keys()
         .map(|f| (f.clone(), vec![]))

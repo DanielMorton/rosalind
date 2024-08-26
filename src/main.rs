@@ -12,7 +12,7 @@ mod protein;
 mod util;
 
 use crate::dna::rna_nucleotide_count;
-use crate::fasta::{pairs, read_fasta, transition_transversion_ratio, FASTA};
+use crate::fasta::{pairs, read_fasta, transition_transversion_ratio, Fasta};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
 use crate::graph::{
     align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill,
@@ -220,7 +220,7 @@ fn main() {
             .for_each(|p| print!("{} ", dna_prob(&dna, p)));
         println!()
     } else if file_type == "revp" {
-        let fasta = FASTA::read_file(&file);
+        let fasta = Fasta::read_file(&file);
         let palindromes = reverse_palindrome(&fasta, 4, 12);
         palindromes
             .iter()
@@ -316,7 +316,7 @@ fn main() {
             println!();
         })
     } else if file_type == "cat" {
-        let fasta = FASTA::read_file(&file);
+        let fasta = Fasta::read_file(&file);
         println!("{}", catalan_number(&fasta))
     } else if file_type == "kmp" {
         let fasta = read_fasta(&file);
@@ -325,7 +325,7 @@ fn main() {
             .for_each(|n| print!("{} ", n));
         println!();
     } else if file_type == "kmer" {
-        let fasta = FASTA::read_file(&file);
+        let fasta = Fasta::read_file(&file);
         let dna_dict = make_dictionary(DNA, 4);
         let counts = kmer_count(&fasta.text, 4);
         dna_dict
