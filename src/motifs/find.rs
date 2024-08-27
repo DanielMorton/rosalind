@@ -20,10 +20,10 @@ fn protein_motif(client: &Client, name: &str, re: &Regex) -> Vec<usize> {
         .and_then(|r| r.text())
         .map(|t| {
             let mut split = t.split('\n');
-            let title = split.next().unwrap().to_owned();
-            (title, split.collect::<String>())
+            let _ = split.next().unwrap().to_owned();
+            split.collect::<String>()
         })
-        .map(|(_, protein)| {
+        .map(|protein| {
             let mut start = 0;
             let mut matches = Vec::new();
             let mut p = &protein[start..];

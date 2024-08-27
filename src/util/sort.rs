@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 pub(crate) fn inversion_count<T: PartialOrd + Copy>(arr: &[T]) -> usize {
     arr.iter()
         .enumerate()
@@ -26,17 +28,19 @@ pub(crate) fn merge<T: PartialOrd + Copy>(arr1: &[T], arr2: &[T]) -> Vec<T> {
 }
 
 pub(crate) fn merge_sort<T: PartialOrd + Copy>(arr: &[T]) -> Vec<T> {
-    if arr.len() < 2 {
-        arr.to_vec()
-    } else if arr.len() == 2 {
-        if arr[0] < arr[1] {
-            arr.to_vec()
-        } else {
-            vec![arr[1], arr[0]]
+    match arr.len().cmp(&2) {
+        Ordering::Less => arr.to_vec(),
+        Ordering::Equal => {
+            if arr[0] < arr[1] {
+                arr.to_vec()
+            } else {
+                vec![arr[1], arr[0]]
+            }
+        },
+        Ordering::Greater => {
+            let m = arr.len() / 2;
+            let (arr1, arr2) = (merge_sort(&arr[..m]), merge_sort(&arr[m..]));
+            merge(&arr1, &arr2)
         }
-    } else {
-        let m = arr.len() / 2;
-        let (arr1, arr2) = (merge_sort(&arr[..m]), merge_sort(&arr[m..]));
-        merge(&arr1, &arr2)
     }
 }

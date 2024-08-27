@@ -36,17 +36,17 @@ impl Fasta {
     }
 }
 
-pub(crate) type dna = Fasta;
+pub(crate) type Dna = Fasta;
 
-impl dna {
+impl Dna {
     pub(crate) fn dna(&self) -> String {
         self.text.to_owned()
     }
 }
 
-pub(crate) type rna = Fasta;
+pub(crate) type Rna = Fasta;
 
-impl rna {
+impl Rna {
     pub(crate) fn rna(&self) -> String {
         self.text.to_owned()
     }

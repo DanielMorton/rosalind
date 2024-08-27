@@ -1,14 +1,14 @@
-use crate::fasta::dna;
+use crate::fasta::Dna;
 use crate::util::{read_pair, DNA_PAIRS};
 
-pub(crate) fn reverse_palindrome(dna: &dna, min_len: usize, max_len: usize) -> Vec<(usize, usize)> {
-    let pairs = read_pair(&DNA_PAIRS);
+pub(crate) fn reverse_palindrome(dna: &Dna, min_len: usize, max_len: usize) -> Vec<(usize, usize)> {
+    let pairs = read_pair(DNA_PAIRS);
     let mut dp = vec![vec![false; dna.len()]; dna.len()];
-    for i in 0..dna.len() {
-        dp[i][i] = false;
+    for (i, d) in dp.iter_mut().enumerate().take(dna.len()) {
+        d[i] = false;
     }
-    for i in 0..(dna.len() - 1) {
-        dp[i][i + 1] =
+    for (i, d) in dp.iter_mut().enumerate().take(dna.len() - 1)  {
+        d[i + 1] =
             pairs.get(&dna.chars().nth(i).unwrap()).unwrap() == &dna.chars().nth(i + 1).unwrap();
     }
     for l in 3..dna.len() {
@@ -21,9 +21,9 @@ pub(crate) fn reverse_palindrome(dna: &dna, min_len: usize, max_len: usize) -> V
         }
     }
     let mut p = Vec::new();
-    for i in 0..dna.len() {
-        for j in i..dna.len() {
-            if j - i + 1 >= min_len && j - i < max_len && dp[i][j] {
+    for (i, d) in dp.iter().enumerate().take(dna.len())  {
+        for (j, &di) in d.iter().enumerate().take(dna.len()).skip(i)  {
+            if j - i + 1 >= min_len && j - i < max_len && di {
                 p.push((i + 1, j - i + 1))
             }
         }
