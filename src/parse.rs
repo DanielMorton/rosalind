@@ -1,7 +1,7 @@
 use clap::{arg, ArgMatches, Command};
 
 pub(crate) fn parse() -> ArgMatches {
-    Command::new("magpie")
+    Command::new("rosalind")
         .arg(arg!(--file <FILE>))
         .get_matches()
 }
