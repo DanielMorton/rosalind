@@ -1,7 +1,8 @@
-use crate::fasta::read::read_fasta;
+use crate::fasta::Fasta;
+use crate::Result;
 
-pub(crate) fn pairs(file: &str, k: usize) -> Vec<(String, String)> {
-    let fasta = read_fasta(file);
+pub(crate) fn pairs(file: &str, k: usize) -> Result<Vec<(String, String)>> {
+    let fasta = Fasta::parse(file)?;
     let mut pairs = Vec::new();
     fasta.iter().enumerate().for_each(|(i, f1)| {
         fasta[..i].iter().for_each(|f2| {
@@ -15,5 +16,5 @@ pub(crate) fn pairs(file: &str, k: usize) -> Vec<(String, String)> {
             }
         })
     });
-    pairs
+    Ok(pairs)
 }

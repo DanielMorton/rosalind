@@ -1,5 +1,6 @@
-use crate::dna::reverse_complement;
+use crate::dna::reverse_complement_string;
 use crate::protein::codon::read_codon;
+use crate::util::Result;
 
 fn find_orf(rna: &str) -> Vec<String> {
     let codon_map = read_codon();
@@ -25,8 +26,8 @@ fn find_orf(rna: &str) -> Vec<String> {
     orfs
 }
 
-pub(crate) fn find_orfs(dna: &str) -> Vec<String> {
-    let rev_dna = reverse_complement(dna);
+pub(crate) fn find_orfs(dna: &str) -> Result<Vec<String>> {
+    let rev_dna = reverse_complement_string(dna)?;
     let rna = dna.replace('T', "U");
     let rev_rna = rev_dna.replace('T', "U");
     let mut orfs = Vec::new();
@@ -34,5 +35,5 @@ pub(crate) fn find_orfs(dna: &str) -> Vec<String> {
         orfs.append(&mut find_orf(&rna[i..]));
         orfs.append(&mut find_orf(&rev_rna[i..]));
     }
-    orfs
+    Ok(orfs)
 }

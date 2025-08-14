@@ -3,7 +3,9 @@ mod search;
 mod sort;
 mod string;
 mod sum;
+mod error;
 
+pub(super) use error::{Error, Result};
 pub(super) use pairs::read_pair;
 pub(super) use search::binary_search;
 pub(super) use sort::{inversion_count, merge, merge_sort};

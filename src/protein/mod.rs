@@ -3,6 +3,7 @@ mod codon;
 mod mass;
 mod orf;
 mod splice;
+mod blosum;
 
 pub(super) use aa::{rna_count, rna_to_protein};
 pub(super) use mass::protein_mass;

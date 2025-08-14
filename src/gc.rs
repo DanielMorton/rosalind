@@ -1,30 +1,39 @@
-use std::fs::read_to_string;
+use crate::fasta::Fasta;
+use crate::util::{read_string, Error};
+use crate::util::Result;
 
-fn gc_content(dna: &str) -> f64 {
-    let gc = dna.chars().filter(|&c| c == 'C' || c == 'G').count();
-    (gc as f64) / (dna.len() as f64) * 100.0
+/// Calculate GC content for a raw DNA string
+pub fn gc_content(dna: &str) -> f64 {
+    if dna.is_empty() {
+        return 0.0;
+    }
+
+    let gc_count = dna.chars().filter(|&c| matches!(c, 'G' | 'C')).count();
+
+    (gc_count as f64 / dna.len() as f64) * 100.0
 }
 
-pub(crate) fn gc_max(file: &str) -> (String, f64) {
-    let text = match read_to_string(file) {
-        Ok(t) => t,
-        Err(e) => panic!("{}", e),
-    };
-    let gc = text
-        .split("\n>")
-        .map(|s| {
-            let mut read = s.split('\n');
-            let title = read.next().unwrap().to_owned();
-            let dna = read.collect::<String>();
-            (title, gc_content(&dna))
-        })
-        .collect::<Vec<_>>();
+pub fn find_highest(sequences: &[Fasta]) -> Option<&Fasta> {
+    sequences.iter().max_by(|&a, &b| {
+        a.gc_content()
+            .partial_cmp(&b.gc_content())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    })
+}
 
-    let argmax = gc
-        .iter()
-        .enumerate()
-        .max_by(|(_, (_, g)), (_, (_, g2))| g.partial_cmp(g2).unwrap())
-        .map(|(i, _)| i)
-        .unwrap();
-    (gc[argmax].0.to_owned(), gc[argmax].1)
+pub fn execute_gc(input_file: &str) -> Result<()> {
+    let content = read_string(input_file)?;
+    let sequences = Fasta::parse(&content)?;
+
+    if sequences.is_empty() {
+        return Err(Error::Parse("No FASTA sequences found".to_string()));
+    }
+
+    let highest = find_highest(&sequences)
+        .ok_or_else(|| Error::Parse("Unable to determine highest GC content".to_string()))?;
+
+    println!("{}", highest.title);
+    println!("{:.6}", highest.gc_content());
+
+    Ok(())
 }

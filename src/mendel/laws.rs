@@ -1,15 +1,45 @@
 use crate::mendel::ncr::ncr;
 use std::collections::HashMap;
+use crate::util::{read_string, Error, Result};
 
-pub(crate) fn first_law(k: u32, m: u32, n: u32) -> f64 {
-    let (kf, mf, nf) = (f64::from(k), f64::from(m), f64::from(n));
-    let num = kf * (kf - 1.0) / 2.0
-        + kf * mf
-        + kf * nf
-        + mf * (mf - 1.0) / 2.0 * 3.0 / 4.0
-        + mf * nf / 2.0;
-    let denom = (kf + mf + nf) * (kf + mf + nf - 1.0) / 2.0;
-    num / denom
+fn mendel_first_law(k: u64, m: u64, n: u64) -> f64 {
+    let k = k as f64;
+    let m = m as f64;
+    let n = n as f64;
+    let total = k + m + n;
+    let denom = total * (total - 1.0); // ordered pairs
+
+    // Probability of recessive phenotype
+    let p_rr_rr = (n * (n - 1.0)) / denom * 1.0;      // rr x rr
+    let p_rr_Rr = (n * m) / denom * 0.5 * 2.0;        // rr x Rr and Rr x rr
+    let p_Rr_Rr = (m * (m - 1.0)) / denom * 0.25;     // Rr x Rr
+
+    let p_recessive = p_rr_rr + p_rr_Rr + p_Rr_Rr;
+    1.0 - p_recessive
+}
+
+pub(crate) fn execute_iprb(input_file: &str) -> Result<()> {
+    let text = read_string(input_file)?;
+    let mut nums = text.split_whitespace();
+
+    let k: u64 = nums
+        .next()
+        .ok_or_else(|| Error::Parse("Missing k".to_string()))?
+        .parse()
+        .map_err(|_| Error::Parse("Invalid k".to_string()))?;
+    let m: u64 = nums
+        .next()
+        .ok_or_else(|| Error::Parse("Missing m".to_string()))?
+        .parse()
+        .map_err(|_| Error::Parse("Invalid m".to_string()))?;
+    let n: u64 = nums
+        .next()
+        .ok_or_else(|| Error::Parse("Missing n".to_string()))?
+        .parse()
+        .map_err(|_| Error::Parse("Invalid n".to_string()))?;
+
+    println!("{:.5}", mendel_first_law(k, m, n));
+    Ok(())
 }
 
 pub(crate) fn expected_offspring(nums: &[u32]) -> f64 {
