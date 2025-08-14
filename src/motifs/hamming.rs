@@ -5,10 +5,7 @@ pub(crate) fn hamming_distance(s: &str, t: &str) -> usize {
 
     assert_eq!(sb.len(), tb.len(), "Strings must be of equal length");
 
-    sb.iter()
-        .zip(tb.iter())
-        .filter(|(&a, &b)| a != b)
-        .count()
+    sb.iter().zip(tb.iter()).filter(|(&a, &b)| a != b).count()
 }
 
 pub(crate) fn execute_hamm(input_file: &str) -> Result<()> {

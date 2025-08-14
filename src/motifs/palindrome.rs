@@ -7,7 +7,7 @@ pub(crate) fn reverse_palindrome(dna: &Dna, min_len: usize, max_len: usize) -> V
     for (i, d) in dp.iter_mut().enumerate().take(dna.len()) {
         d[i] = false;
     }
-    for (i, d) in dp.iter_mut().enumerate().take(dna.len() - 1)  {
+    for (i, d) in dp.iter_mut().enumerate().take(dna.len() - 1) {
         d[i + 1] =
             pairs.get(&dna.chars().nth(i).unwrap()).unwrap() == &dna.chars().nth(i + 1).unwrap();
     }
@@ -21,8 +21,8 @@ pub(crate) fn reverse_palindrome(dna: &Dna, min_len: usize, max_len: usize) -> V
         }
     }
     let mut p = Vec::new();
-    for (i, d) in dp.iter().enumerate().take(dna.len())  {
-        for (j, &di) in d.iter().enumerate().take(dna.len()).skip(i)  {
+    for (i, d) in dp.iter().enumerate().take(dna.len()) {
+        for (j, &di) in d.iter().enumerate().take(dna.len()).skip(i) {
             if j - i + 1 >= min_len && j - i < max_len && di {
                 p.push((i + 1, j - i + 1))
             }

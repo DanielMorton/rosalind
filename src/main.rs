@@ -1,3 +1,4 @@
+mod commands;
 mod dna;
 mod fasta;
 mod fibonacci;
@@ -9,7 +10,6 @@ mod motifs;
 mod profile;
 mod protein;
 mod util;
-mod commands;
 
 use crate::dna::{execute_dna, rna_nucleotide_count, transcribe_dna_to_rna};
 use crate::fasta::{pairs, transition_transversion_ratio, Fasta};
@@ -18,21 +18,24 @@ use crate::graph::{
     align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill,
 };
 use crate::mendel::{dna_prob, execute_iprb, factorial, npr, permutation_list, permute};
-use crate::motifs::{build_failure_array, execute_hamm, find_motifs, get_subsequence, kmer_count, lcs, make_dictionary, reverse_palindrome};
+use crate::motifs::{
+    build_failure_array, execute_hamm, execute_subs, find_motifs, get_subsequence, kmer_count, lcs,
+    make_dictionary, reverse_palindrome,
+};
 use crate::profile::find_consensus;
-use crate::protein::{find_orfs, rna_splice};
+use crate::protein::{execute_prot, find_orfs, rna_splice};
 use crate::util::{
     binary_search, inversion_count, merge, merge_sort, read_lines, read_num_list, read_string,
-    read_two_line, read_vec, two_sum, DNA,
+    read_vec, two_sum, DNA,
 };
 use dna::reverse_complement;
 use fibonacci::k_fibonacci;
 use mendel::{expected_offspring, second_law};
 use motifs::hamming_distance;
-use motifs::motif_start;
-use protein::rna_to_protein;
 use protein::{protein_mass, rna_count};
 
+use crate::commands::{Cli, Commands};
+use crate::gc::execute_gc;
 use clap::Parser;
 use regex::Regex;
 use reqwest::blocking::Client;
@@ -40,25 +43,15 @@ use std::cmp::{max, min};
 use std::collections::HashSet;
 use std::fs;
 use util::Result;
-use crate::commands::{Cli, Commands};
-use crate::gc::execute_gc;
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Dna(args) | Commands::Ini(args) => {
-            execute_dna(&args.file)
-        }
-        Commands::Rna(args) => {
-            transcribe_dna_to_rna(&args.file)
-        }
-        Commands::Revc(args) => {
-            reverse_complement(&args.file)
-        }
-        Commands::Iprb(args) => {
-             execute_iprb(&args.file)
-        }
+        Commands::Dna(args) | Commands::Ini(args) => execute_dna(&args.file),
+        Commands::Rna(args) => transcribe_dna_to_rna(&args.file),
+        Commands::Revc(args) => reverse_complement(&args.file),
+        Commands::Iprb(args) => execute_iprb(&args.file),
         Commands::Fib(args) => {
             let nums = fs::read_to_string(&args.file).expect("Failed to read file");
             let mut num_split = nums.trim().split(' ');
@@ -69,24 +62,10 @@ fn main() -> Result<()> {
             println!("{}", k_fibonacci(n, k));
             Ok(())
         }
-        Commands::Gc(args) => { execute_gc(&args.file)}
-        Commands::Prot(args) => {
-            let rna = read_string(&args.file)?;
-            let protein = rna_to_protein(&rna);
-            println!("{protein}");
-            Ok(())
-        }
-        Commands::Subs(args) => {
-            let (dna, motif) = read_two_line(&args.file)?;
-            motif_start(&dna, &motif)
-                .iter()
-                .for_each(|p| print!("{p} "));
-            println!();
-            Ok(())
-        }
-        Commands::Hamm(args) => {
-            execute_hamm(&args.file)
-        }
+        Commands::Gc(args) => execute_gc(&args.file),
+        Commands::Prot(args) => execute_prot(&args.file),
+        Commands::Subs(args) => execute_subs(&args.file),
+        Commands::Hamm(args) => execute_hamm(&args.file),
         Commands::Iev(args) => {
             let nums = read_num_list::<u32>(&args.file, ' ')?;
             println!("{}", expected_offspring(&nums));

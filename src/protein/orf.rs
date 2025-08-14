@@ -1,31 +1,49 @@
 use crate::dna::reverse_complement_string;
-use crate::protein::codon::read_codon;
+use crate::protein::codon::load_codon_table;
 use crate::util::Result;
 
 fn find_orf(rna: &str) -> Vec<String> {
-    let codon_map = read_codon();
-    let aa_list = rna
+    let codon_map = load_codon_table();
+    let mut orfs = Vec::new();
+
+    // Convert RNA to codons (groups of 3 nucleotides)
+    let codons: Vec<String> = rna
         .chars()
         .collect::<Vec<_>>()
         .chunks(3)
-        .map(|c| c.iter().collect::<String>())
-        .map(|c| codon_map.get(&c).unwrap_or(&" ".to_owned()).to_owned())
-        .collect::<String>();
-    let (mut left, mut right) = (0, 0);
-    let mut orfs = Vec::new();
-    while right < aa_list.len() {
-        if aa_list.chars().nth(right).unwrap() != ' ' || left == right {
-            right += 1;
-        } else if aa_list.chars().nth(left).unwrap() != 'M' && left <= right {
-            left += 1;
-        } else {
-            orfs.push(aa_list[left..right].to_owned());
-            left += 1
+        .filter(|chunk| chunk.len() == 3) // Only complete codons
+        .map(|chunk| chunk.iter().collect::<String>())
+        .collect();
+
+    // Find all ORFs starting from each position
+    for start_pos in 0..codons.len() {
+        // Look for start codon (AUG -> M)
+        if let Some(Some('M')) = codon_map.get(&codons[start_pos]) {
+            let mut orf = String::new();
+            orf.push('M'); // Add the start methionine
+
+            // Translate codons until we hit a stop codon or end of sequence
+            for pos in (start_pos + 1)..codons.len() {
+                match codon_map.get(&codons[pos]) {
+                    Some(Some(amino_acid)) => {
+                        orf.push(*amino_acid);
+                    }
+                    Some(None) => {
+                        // Stop codon found - complete ORF
+                        orfs.push(orf);
+                        break;
+                    }
+                    None => {
+                        // Unknown codon - skip this ORF
+                        break;
+                    }
+                }
+            }
         }
     }
+
     orfs
 }
-
 pub(crate) fn find_orfs(dna: &str) -> Result<Vec<String>> {
     let rev_dna = reverse_complement_string(dna)?;
     let rna = dna.replace('T', "U");

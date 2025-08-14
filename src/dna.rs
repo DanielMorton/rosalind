@@ -9,7 +9,12 @@ struct DnaNucleotideCounts {
 }
 impl DnaNucleotideCounts {
     fn new() -> Self {
-        Self { a: 0, c: 0, g: 0, t: 0 }
+        Self {
+            a: 0,
+            c: 0,
+            g: 0,
+            t: 0,
+        }
     }
 
     fn count_nucleotides_in_string(dna_string: &str) -> Self {

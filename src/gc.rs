@@ -1,6 +1,6 @@
 use crate::fasta::Fasta;
-use crate::util::{read_string, Error};
 use crate::util::Result;
+use crate::util::{read_string, Error};
 
 /// Calculate GC content for a raw DNA string
 pub fn gc_content(dna: &str) -> f64 {

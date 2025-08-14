@@ -1,11 +1,12 @@
 mod aa;
+mod blosum;
 mod codon;
 mod mass;
 mod orf;
 mod splice;
-mod blosum;
 
 pub(super) use aa::{rna_count, rna_to_protein};
+pub(super) use codon::execute_prot;
 pub(super) use mass::protein_mass;
 pub(super) use orf::find_orfs;
 pub(super) use splice::rna_splice;

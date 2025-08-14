@@ -1,9 +1,9 @@
+mod error;
 mod pairs;
 mod search;
 mod sort;
 mod string;
 mod sum;
-mod error;
 
 pub(super) use error::{Error, Result};
 pub(super) use pairs::read_pair;

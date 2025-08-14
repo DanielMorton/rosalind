@@ -36,7 +36,7 @@ pub(crate) fn merge_sort<T: PartialOrd + Copy>(arr: &[T]) -> Vec<T> {
             } else {
                 vec![arr[1], arr[0]]
             }
-        },
+        }
         Ordering::Greater => {
             let m = arr.len() / 2;
             let (arr1, arr2) = (merge_sort(&arr[..m]), merge_sort(&arr[m..]));

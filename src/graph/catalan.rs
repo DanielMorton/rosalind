@@ -1,6 +1,6 @@
-use std::collections::hash_map::Entry;
 use crate::fasta::Rna;
 use crate::util::{read_pair, RNA_PAIRS};
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 fn catalan_dp(

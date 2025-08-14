@@ -1,6 +1,6 @@
-use std::str::Chars;
 use crate::gc::gc_content;
 use crate::util::{Error, Result};
+use std::str::Chars;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub(crate) struct Fasta {
@@ -13,7 +13,10 @@ impl Fasta {
         self.text.chars()
     }
     pub(crate) fn new(title: &str, dna: &str) -> Self {
-        Self { title: title.into(), text: dna.into() }
+        Self {
+            title: title.into(),
+            text: dna.into(),
+        }
     }
     pub(crate) fn parse_single(content: &str) -> Result<Self> {
         let mut lines = content.lines().map(str::trim).filter(|l| !l.is_empty());
@@ -32,8 +35,14 @@ impl Fasta {
         let mut sequence = String::new();
         for line in lines {
             let cleaned: String = line.chars().filter(|c| !c.is_whitespace()).collect();
-            if !cleaned.chars().all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'T' | 'G' | 'C' | 'U' | 'N')) {
-                return Err(Error::InvalidSequence(format!("Invalid characters in sequence: {}", line)));
+            if !cleaned
+                .chars()
+                .all(|c| matches!(c.to_ascii_uppercase(), 'A' | 'T' | 'G' | 'C' | 'U' | 'N'))
+            {
+                return Err(Error::InvalidSequence(format!(
+                    "Invalid characters in sequence: {}",
+                    line
+                )));
             }
             sequence.push_str(&cleaned);
         }
@@ -75,11 +84,11 @@ impl Fasta {
     pub(crate) fn len(&self) -> usize {
         self.text.len()
     }
-    
-    pub(crate) fn gc_content(&self) -> f64 {gc_content(&self.text)}
+
+    pub(crate) fn gc_content(&self) -> f64 {
+        gc_content(&self.text)
+    }
 }
-
-
 
 pub(crate) type Dna = Fasta;
 

@@ -1,6 +1,6 @@
 use crate::mendel::ncr::ncr;
-use std::collections::HashMap;
 use crate::util::{read_string, Error, Result};
+use std::collections::HashMap;
 
 fn mendel_first_law(k: u64, m: u64, n: u64) -> f64 {
     let k = k as f64;
@@ -10,9 +10,9 @@ fn mendel_first_law(k: u64, m: u64, n: u64) -> f64 {
     let denom = total * (total - 1.0); // ordered pairs
 
     // Probability of recessive phenotype
-    let p_rr_rr = (n * (n - 1.0)) / denom * 1.0;      // rr x rr
-    let p_rr_Rr = (n * m) / denom * 0.5 * 2.0;        // rr x Rr and Rr x rr
-    let p_Rr_Rr = (m * (m - 1.0)) / denom * 0.25;     // Rr x Rr
+    let p_rr_rr = (n * (n - 1.0)) / denom * 1.0; // rr x rr
+    let p_rr_Rr = (n * m) / denom * 0.5 * 2.0; // rr x Rr and Rr x rr
+    let p_Rr_Rr = (m * (m - 1.0)) / denom * 0.25; // Rr x Rr
 
     let p_recessive = p_rr_rr + p_rr_Rr + p_Rr_Rr;
     1.0 - p_recessive
