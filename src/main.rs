@@ -12,29 +12,29 @@ mod protein;
 mod util;
 
 use crate::dna::{execute_dna, rna_nucleotide_count, transcribe_dna_to_rna};
-use crate::fasta::{pairs, transition_transversion_ratio, Fasta};
+use crate::fasta::{execute_grph, transition_transversion_ratio, Fasta};
 use crate::gene::{longest_decreasing_sequence, longest_increasing_sequence};
 use crate::graph::{
     align, catalan_number, edges_to_degrees, inner_nodes, read_edges, tree_edge_fill,
 };
-use crate::mendel::{dna_prob, execute_iprb, factorial, npr, permutation_list, permute};
+use crate::mendel::{dna_prob, execute_iev, execute_iprb, factorial, npr, permutation_list, permute};
 use crate::motifs::{
     build_failure_array, execute_hamm, execute_subs, find_motifs, get_subsequence, kmer_count, lcs,
     make_dictionary, reverse_palindrome,
 };
-use crate::profile::find_consensus;
-use crate::protein::{execute_prot, find_orfs, rna_splice};
+use crate::profile::execute_cons;
+use crate::protein::{execute_prot, execute_splc, find_orfs};
 use crate::util::{
-    binary_search, inversion_count, merge, merge_sort, read_lines, read_num_list, read_string,
+    binary_search, inversion_count, merge, merge_sort, read_lines, read_string,
     read_vec, two_sum, DNA,
 };
 use dna::reverse_complement;
-use fibonacci::k_fibonacci;
-use mendel::{expected_offspring, second_law};
+use mendel::second_law;
 use motifs::hamming_distance;
 use protein::{protein_mass, rna_count};
 
 use crate::commands::{Cli, Commands};
+use crate::fibonacci::{execute_fib, execute_fibd};
 use crate::gc::execute_gc;
 use clap::Parser;
 use regex::Regex;
@@ -52,25 +52,13 @@ fn main() -> Result<()> {
         Commands::Rna(args) => transcribe_dna_to_rna(&args.file),
         Commands::Revc(args) => reverse_complement(&args.file),
         Commands::Iprb(args) => execute_iprb(&args.file),
-        Commands::Fib(args) => {
-            let nums = fs::read_to_string(&args.file).expect("Failed to read file");
-            let mut num_split = nums.trim().split(' ');
-            let (n, k) = (
-                num_split.next().unwrap().parse::<u64>().unwrap(),
-                num_split.next().unwrap().parse::<u64>().unwrap(),
-            );
-            println!("{}", k_fibonacci(n, k));
-            Ok(())
-        }
+        Commands::Fib(args) => execute_fib(&args.file),
         Commands::Gc(args) => execute_gc(&args.file),
         Commands::Prot(args) => execute_prot(&args.file),
         Commands::Subs(args) => execute_subs(&args.file),
         Commands::Hamm(args) => execute_hamm(&args.file),
-        Commands::Iev(args) => {
-            let nums = read_num_list::<u32>(&args.file, ' ')?;
-            println!("{}", expected_offspring(&nums));
-            Ok(())
-        }
+        Commands::Fibd(args) => execute_fibd(&args.file),
+        Commands::Iev(args) => execute_iev(&args.file),
         Commands::Mrna(args) => {
             let protein = read_string(&args.file)?;
             println!("{}", rna_count(&protein));
@@ -91,11 +79,7 @@ fn main() -> Result<()> {
             println!("{}", protein_mass(&protein));
             Ok(())
         }
-        Commands::Grph(args) => {
-            let edges = pairs(&args.file, 3)?;
-            edges.iter().for_each(|(f1, f2)| println!("{} {}", f1, f2));
-            Ok(())
-        }
+        Commands::Grph(args) => execute_grph(&args.file),
         Commands::Mprt(args) => {
             let names = read_vec(&args.file, '\n')?;
             let client = Client::new();
@@ -103,11 +87,7 @@ fn main() -> Result<()> {
             find_motifs(&client, &names, &re);
             Ok(())
         }
-        Commands::Cons(args) => {
-            let dna_list = Fasta::parse(&args.file)?;
-            println!("{}", find_consensus(&dna_list));
-            Ok(())
-        }
+        Commands::Cons(args) => execute_cons(&args.file),
         Commands::Orf(args) => {
             let fasta = Fasta::parse(&args.file)?;
             let dna = fasta[0].text.clone();
@@ -118,16 +98,7 @@ fn main() -> Result<()> {
                 .for_each(|orf| println!("{orf}"));
             Ok(())
         }
-        Commands::Splc(args) => {
-            let fasta = Fasta::parse(&args.file)?;
-            let dna = fasta[0].text.clone();
-            let introns = fasta[1..]
-                .iter()
-                .map(|f| f.text.clone())
-                .collect::<Vec<_>>();
-            println!("{}", rna_splice(&dna, &introns));
-            Ok(())
-        }
+        Commands::Splc(args) => execute_splc(&args.file),
         Commands::Lcsm(args) => {
             let fasta = Fasta::parse(&args.file)?;
             println!("{}", lcs(&fasta));

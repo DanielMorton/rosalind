@@ -54,7 +54,8 @@ pub(crate) fn reverse_count(reverse: &HashMap<String, Vec<String>>) -> HashMap<S
 
 pub(crate) fn execute_prot(input_file: &str) -> Result<()> {
     let rna = read_string(input_file)?;
-    let protein = rna_to_protein(&rna)?;
+    let codon_table = load_codon_table();
+    let protein = rna_to_protein(&rna, &codon_table)?;
     println!("{protein}");
     Ok(())
 }

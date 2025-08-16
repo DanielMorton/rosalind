@@ -12,12 +12,14 @@ impl Fasta {
     pub(crate) fn chars(&self) -> Chars {
         self.text.chars()
     }
+
     pub(crate) fn new(title: &str, dna: &str) -> Self {
         Self {
             title: title.into(),
             text: dna.into(),
         }
     }
+
     pub(crate) fn parse_single(content: &str) -> Result<Self> {
         let mut lines = content.lines().map(str::trim).filter(|l| !l.is_empty());
 
@@ -57,21 +59,73 @@ impl Fasta {
     /// Parse FASTA format content into sequences
     pub fn parse(content: &str) -> Result<Vec<Self>> {
         let mut sequences = Vec::new();
-        let mut buffer = String::new();
+        let mut current_title: Option<String> = None;
+        let mut current_sequence = String::new();
 
-        for line in content.lines() {
-            if line.starts_with('>') {
-                if !buffer.is_empty() {
-                    sequences.push(Fasta::parse_single(&buffer)?);
-                    buffer.clear();
-                }
+        for (line_num, line) in content.lines().enumerate() {
+            let line = line.trim();
+
+            // Skip empty lines
+            if line.is_empty() {
+                continue;
             }
-            buffer.push_str(line);
-            buffer.push('\n');
+
+            if line.starts_with('>') {
+                // If we have a previous sequence, save it
+                if let Some(title) = current_title.take() {
+                    if !current_sequence.is_empty() {
+                        sequences.push(Fasta::new(&title, &current_sequence));
+                        current_sequence.clear();
+                    }
+                }
+
+                // Start new sequence
+                let title = line
+                    .strip_prefix('>')
+                    .ok_or_else(|| Error::Parse("FASTA header must start with '>'".to_string()))?
+                    .trim();
+
+                if title.is_empty() {
+                    return Err(Error::Parse("Empty sequence ID found".to_string()));
+                }
+
+                current_title = Some(title.to_string());
+            } else {
+                // This is sequence data
+                if current_title.is_none() {
+                    return Err(Error::Parse(format!(
+                        "Sequence data found before header at line {}: '{}'",
+                        line_num + 1,
+                        line
+                    )));
+                }
+
+                // Clean and validate the sequence line
+                let cleaned: String = line
+                    .chars()
+                    .filter(|c| !c.is_whitespace())
+                    .map(|c| c.to_ascii_uppercase())
+                    .collect();
+
+                if !cleaned
+                    .chars()
+                    .all(|c| matches!(c, 'A' | 'T' | 'G' | 'C' | 'U' | 'N'))
+                {
+                    return Err(Error::InvalidSequence(format!(
+                        "Invalid characters in sequence: {} (cleaned: {})",
+                        line, cleaned
+                    )));
+                }
+                current_sequence.push_str(&cleaned);
+            }
         }
 
-        if !buffer.trim().is_empty() {
-            sequences.push(Fasta::parse_single(&buffer)?);
+        // Don't forget the last sequence
+        if let Some(title) = current_title {
+            if current_sequence.is_empty() {
+                return Err(Error::Parse(format!("Empty sequence for ID: {}", title)));
+            }
+            sequences.push(Fasta::new(&title, &current_sequence));
         }
 
         if sequences.is_empty() {

@@ -2,8 +2,7 @@ use crate::protein::codon::load_codon_table;
 use crate::util::Result;
 use std::collections::HashMap;
 
-pub fn rna_to_protein(rna: &str) -> Result<String> {
-    let codon_table = load_codon_table();
+pub fn rna_to_protein(rna: &str, codon_table: &HashMap<String, Option<char>>) -> Result<String> {
     let mut protein = String::new();
 
     // Process RNA in chunks of 3 (codons)

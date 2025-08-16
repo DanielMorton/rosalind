@@ -36,3 +36,19 @@ pub(crate) fn read_vec(file: &str, sep: char) -> Result<Vec<String>> {
 pub(crate) fn read_lines(file: &str) -> Result<Vec<String>> {
     read_vec(file, '\n')
 }
+
+pub(crate) fn get_suffix(s: &str, k: usize) -> Option<&str> {
+    if s.len() >= k {
+        Some(&s[s.len() - k..])
+    } else {
+        None
+    }
+}
+
+pub(crate) fn get_prefix(s: &str, k: usize) -> Option<&str> {
+    if s.len() >= k {
+        Some(&s[..k])
+    } else {
+        None
+    }
+}

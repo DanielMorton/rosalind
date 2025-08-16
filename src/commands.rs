@@ -107,4 +107,5 @@ pub enum Commands {
     /// 2SUM
     #[command(name = "2sum")]
     TwoSum(FileArgs),
+    Fibd(FileArgs),
 }

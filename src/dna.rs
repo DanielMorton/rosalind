@@ -63,12 +63,12 @@ pub(crate) fn rna_nucleotide_count(dna: &str) -> Vec<usize> {
     count
 }
 
-fn transcribe_string(dna_string: &str) -> String {
-    dna_string.replace('T', "U")
+pub fn transcribe_string(dna_string: &str) -> Result<String> {
+    Ok(dna_string.replace('T', "U"))
 }
 pub fn transcribe_dna_to_rna(input_file: &str) -> Result<()> {
     let dna_string = read_string(input_file)?;
-    let rna_string = transcribe_string(&dna_string);
+    let rna_string = transcribe_string(&dna_string)?;
 
     // Print the result
     println!("{}", rna_string);

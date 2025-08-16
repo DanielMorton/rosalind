@@ -9,7 +9,9 @@ pub(super) use error::{Error, Result};
 pub(super) use pairs::read_pair;
 pub(super) use search::binary_search;
 pub(super) use sort::{inversion_count, merge, merge_sort};
-pub(super) use string::{read_lines, read_num_list, read_string, read_two_line, read_vec};
+pub(super) use string::{
+    get_prefix, get_suffix, read_lines, read_num_list, read_string, read_two_line, read_vec,
+};
 pub(super) use sum::two_sum;
 
 pub(super) static DNA: &[&str] = &["A", "C", "G", "T"];

@@ -1,5 +1,5 @@
 use crate::mendel::ncr::ncr;
-use crate::util::{read_string, Error, Result};
+use crate::util::{read_num_list, read_string, Error, Result};
 use std::collections::HashMap;
 
 fn mendel_first_law(k: u64, m: u64, n: u64) -> f64 {
@@ -42,12 +42,28 @@ pub(crate) fn execute_iprb(input_file: &str) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn expected_offspring(nums: &[u32]) -> f64 {
-    2.0 * f64::from(nums[0])
-        + 2.0 * f64::from(nums[1])
-        + 2.0 * f64::from(nums[2])
-        + 1.5 * f64::from(nums[3])
-        + 1.0 * f64::from(nums[4])
+pub fn expected_dominant_offspring(counts: &[u32]) -> Result<f64> {
+    if counts.len() != 6 {
+        return Err(Error::Parse("Expected exactly 6 genotype counts".into()));
+    }
+
+    // Probabilities of dominant phenotype for each cross type
+    let probabilities = [1.0, 1.0, 1.0, 0.75, 0.5, 0.0];
+
+    let expected: f64 = counts
+        .iter()
+        .zip(probabilities.iter())
+        .map(|(&count, &prob)| count as f64 * 2.0 * prob)
+        .sum();
+
+    Ok(expected)
+}
+
+pub fn execute_iev(input_file: &str) -> Result<()> {
+    let counts = read_num_list::<u32>(input_file, ' ')?;
+    let expected = expected_dominant_offspring(&counts)?;
+    println!("{:.5}", expected);
+    Ok(())
 }
 
 pub(crate) fn second_law(k: u32, n: u32, p: f64) -> f64 {
